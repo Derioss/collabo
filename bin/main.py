@@ -10,7 +10,7 @@ import datetime
 import yaml
 from function import *
 
-###VAR##########
+###VAR##############
 project_root = Path(__file__).absolute().parent.parent
 datetime_now=datetime.datetime.now()
 list_data_dir = os.listdir(f'{project_root}\data')
@@ -46,6 +46,16 @@ def main(loglevel,my_log,dryrun):
     my_log.info('START PROGRAM')
     if dryrun is True:
         my_log.info('DRYRUN ACTIVE')
+
+    value = check_if_one_file_in_dir(list_data_dir)
+    if value is not 'ok':
+        my_log.warning(value)
+    
+    with open(f'{project_root}/data/'+ list_data_dir[1], 'r',encoding="utf8") as data_file:
+        print(data_file.read())
+
+
+
 
     print(conf['path']['log_path'])
 #    with open(f'{project_root}/data/'):
