@@ -1,3 +1,6 @@
 .venv
 data/*.csv
+temp/*.csv
 collabo.log
+bin/__pycache__/
+bin/lib/__pycache__/

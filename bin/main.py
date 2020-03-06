@@ -1,48 +1,22 @@
 #!/user/bin/env python3
-import logging
-import logging.handlers
 import sys
 import argparse
 import os
 import socket
 from pathlib import Path
-import datetime
-import yaml
-from function import *
+from lib.function_file import check_if_one_file_in_dir,read_data_and_for_each_event_write_file
+from lib.function_load import load_config
+from lib.function_log import my_log
 
 ###VAR##############
 project_root = Path(__file__).absolute().parent.parent
-datetime_now=datetime.datetime.now()
 list_data_dir = os.listdir(f'{project_root}\data')
-
 ###CONF####
-with open(f'{project_root}/conf/main.yaml') as ymlfile:
-    conf = yaml.load(ymlfile, Loader=yaml.FullLoader)
-
-############LOGGING#################################
-def my_log(my_log, loglevel):
-
-    LEVELS = {'debug': logging.DEBUG,
-          'info': logging.INFO,
-          'warning': logging.WARNING,
-          'error': logging.ERROR,
-          'critical': logging.CRITICAL}
-
-    my_log = logging.getLogger(my_log)
-    my_log.setLevel(LEVELS[loglevel])
-    logFormatter = logging.Formatter(f'{datetime_now} - %(levelname)s - %(message)s')
-    sysloghandler = logging.FileHandler(f'{project_root}\log\collabo.log')
-    sysloghandler.setFormatter(logFormatter)
-    my_log.addHandler(sysloghandler)
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setFormatter(logFormatter)
-    my_log.addHandler(consoleHandler)
-    return my_log
-
+load_config(project_root)
 ####################MAIN#############################
-def main(loglevel,my_log,dryrun):
+def main(loglevel,my_log,dryrun,project_root):
     #logging 
-    my_log = my_log('script.py',loglevel)
+    my_log = my_log('script.py',loglevel,project_root)
     my_log.info('START PROGRAM')
     if dryrun is True:
         my_log.info('DRYRUN ACTIVE')
@@ -50,16 +24,9 @@ def main(loglevel,my_log,dryrun):
     value = check_if_one_file_in_dir(list_data_dir)
     if value is not 'ok':
         my_log.warning(value)
-    
-    with open(f'{project_root}/data/'+ list_data_dir[1], 'r',encoding="utf8") as data_file:
-        print(data_file.read())
 
+    read_data_and_for_each_event_write_file(f'{project_root}/data/'+ list_data_dir[1],f'{project_root}/temp')
 
-
-
-    print(conf['path']['log_path'])
-#    with open(f'{project_root}/data/'):
-#        for line in 
     my_log.info('STOP PROGRAM')
 ##########################################################
 
@@ -76,4 +43,4 @@ if __name__ == "__main__":
     else:
         dryrun=False
     #main
-    main(loglevel,my_log,dryrun)
+    main(loglevel,my_log,dryrun,project_root)
