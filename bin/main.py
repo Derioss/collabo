@@ -9,6 +9,7 @@ from lib.function_log import my_log
 import lib.function_data as data
 import pandas as pd
 import numpy as np
+import openpyxl
 ###VAR##############
 project_root = Path(__file__).absolute().parent.parent
 list_data_dir = os.listdir(f'{project_root}\data')
@@ -27,7 +28,16 @@ def main(loglevel,my_log,dryrun,project_root):
         my_log.warning(value)
 
     file.read_data_and_for_each_event_write_file(f'{project_root}/data/'+ list_data_dir[1],f'{project_root}/temp')
-    text = file.format_temp_file(project_root)
+    file.format_temp_file(project_root)
+    '''
+    player_class = data.dict_player_by_event(project_root)
+    final_dict = player_class.build_player_dict_list_by_date_event()
+    print(final_dict['06-01-2020'])
+    '''
+ 
+
+
+    '''
     present = data.retrieve_present_by_event(project_root)
     player_list_temp = []
 
@@ -39,7 +49,8 @@ def main(loglevel,my_log,dryrun,project_root):
     index_raid = data.retrieve_date_event(project_root)
     df = pd.DataFrame(columns=index_raid, index=player_list)
     print(df)
-
+    df.to_excel('myDataFrame.xlsx', encoding='utf-8')
+    '''
     my_log.info('STOP PROGRAM')
 ##########################################################
 
