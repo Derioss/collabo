@@ -1,18 +1,19 @@
 #!/user/bin/env python3
-import sys
+import sys, os
 import argparse
-import os
 import socket
 from pathlib import Path
-from lib.function_file import check_if_one_file_in_dir,read_data_and_for_each_event_write_file
+import lib.function_file as file
 from lib.function_load import load_config
 from lib.function_log import my_log
-
+import lib.function_data as data
+import pandas as pd
+import numpy as np
 ###VAR##############
 project_root = Path(__file__).absolute().parent.parent
 list_data_dir = os.listdir(f'{project_root}\data')
 ###CONF####
-load_config(project_root)
+conf = load_config(project_root)
 ####################MAIN#############################
 def main(loglevel,my_log,dryrun,project_root):
     #logging 
@@ -21,11 +22,23 @@ def main(loglevel,my_log,dryrun,project_root):
     if dryrun is True:
         my_log.info('DRYRUN ACTIVE')
 
-    value = check_if_one_file_in_dir(list_data_dir)
+    value = file.check_if_one_file_in_dir(list_data_dir)
     if value is not 'ok':
         my_log.warning(value)
 
-    read_data_and_for_each_event_write_file(f'{project_root}/data/'+ list_data_dir[1],f'{project_root}/temp')
+    file.read_data_and_for_each_event_write_file(f'{project_root}/data/'+ list_data_dir[1],f'{project_root}/temp')
+    text = file.format_temp_file(project_root)
+    present = data.retrieve_present_by_event(project_root)
+    player_list_temp = []
+
+
+    for list in present:
+        player_list_temp = player_list_temp + list
+
+    player_list = set(player_list_temp)
+    index_raid = data.retrieve_date_event(project_root)
+    df = pd.DataFrame(columns=index_raid, index=player_list)
+    print(df)
 
     my_log.info('STOP PROGRAM')
 ##########################################################
