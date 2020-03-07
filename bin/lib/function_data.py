@@ -44,29 +44,23 @@ def build_player_list(temp_dir,file,num0,num1):
     player = []
     with open(f'{temp_dir}/{file}', 'r',encoding="utf8") as data_file:
         lines = data_file.readlines()
-        if num1 is False:
-            player_temp = listToString(lines[num0]).split('--')
-        else:
-            player_temp = listToString(lines[num0:num1]).split('--')
+        player_temp = listToString(lines[num0:num1]).split('--')
         for entry in player_temp:
             new_line = entry.rstrip()
             if re.search(r"\*\*", entry):
                 player.append(new_line.split('**')[1])
         return player
 
-def build_player_list_format2(temp_dir,file,num0,num1):
+def build_player_list_format2(temp_dir,file,num0):
     player = []
     with open(f'{temp_dir}/{file}', 'r',encoding="utf8") as data_file:
         lines = data_file.readlines()
-        if num1 is False:
-            player_temp = listToString(lines[num0]).split('--')
-        else:
-            player_temp = listToString(lines[num0:num1]).split('--')
-        for entry in player_temp:
-            new_line = entry.rstrip()
-            if re.search(r"\-\-", new_line):
-                player.append(new_line.split('--')[1])
+        player_temp = lines[num0].split(',')
+        for entry in player_temp[1:-1]:
+            player.append(entry.split('--')[2].replace('**',''))
+
         return player
+
 class dict_player_by_event:
     def __init__(self,project_root):
         self.project_root = project_root
@@ -77,21 +71,18 @@ class dict_player_by_event:
         self.bench = 12
         self.abs = 13
         self.final_dict = {}
-
     def build_player_dict_list_by_date_event(self):
-
         list_temp_dir = os.listdir(self.temp_dir)
         for file in list_temp_dir[1:]:
             temp_dict = {}
             player_dict = {}
             date = retrieve_date_event(self.temp_dir,file)
             player_dict['present'] = build_player_list(self.temp_dir,file, self.present0,self.present1)
-            player_dict['late'] = build_player_list_format2(self.temp_dir,file, self.late,False)
-            player_dict['bench'] = build_player_list_format2(self.temp_dir,file, self.bench, False)
-            player_dict['abs'] = build_player_list_format2(self.temp_dir,file, self.abs, False)
+            player_dict['late'] = build_player_list_format2(self.temp_dir,file, self.late)
+            player_dict['bench'] = build_player_list_format2(self.temp_dir,file, self.bench)
+            player_dict['abs'] = build_player_list_format2(self.temp_dir,file, self.abs)
             temp_dict[date] = player_dict
             self.final_dict.update(temp_dict)
-
         return self.final_dict
 
 

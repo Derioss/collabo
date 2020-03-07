@@ -29,11 +29,14 @@ def main(loglevel,my_log,dryrun,project_root):
 
     file.read_data_and_for_each_event_write_file(f'{project_root}/data/'+ list_data_dir[1],f'{project_root}/temp')
     file.format_temp_file(project_root)
-    '''
+
+    #data.build_player_list_format2(f'{project_root}/temp','209.csv',13)
+
+
     player_class = data.dict_player_by_event(project_root)
     final_dict = player_class.build_player_dict_list_by_date_event()
-    print(final_dict['06-01-2020'])
-    '''
+    print(final_dict['05-02-2020'])
+
  
 
 
